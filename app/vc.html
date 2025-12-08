@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>video calling app</title>
+    <link rel="stylesheet" href="css/video.css">
+    <script src="/js/socket.io.js" defer></script>
+    <script src="/js/main.js" defer></script>
+</head>
+<body>
+    <nav>
+        <img src="images\Picsart_25-03-22_22-53-34-296.png" alt="Watchers" height="60" width="190" >
+      
+        <span class="sideMenuButton" 
+            onclick="openNavbar()">
+            &#9776
+        </span>
+
+        <div class="navbar">
+            <ul>
+                <li><a href="#Home">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Features</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
+</ul>
+    <main class="main-container">
+        <aside class="caller-list-wrapper">
+            <h1 class="caller-list-heading h-font">Contacts</h1>
+            <ul id="allusers" class="caller-list">
+                <!-- <li>
+                    <span>You)</span>
+                    <button class="call-btn"><img width="20" src="/images/phone.png" alt=""></button>
+                </li> -->
+            </ul>
+        </aside>
+         <!-- YouTube Section -->
+ <div class="youtube-section">
+    <input type="text" id="youtube-url" placeholder="Enter YouTube URL" />
+    <button id="load-youtube-video">Load Video</button>
+    <input type="file" id="video-url" placeholder="Upload your file" />
+    <button id="load-video">Upload Video</button>
+    
+    <iframe id="youtube-player" 
+        width="560" 
+        height="315" 
+        src="" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+</div>
+        <section class="video"> </section>
+        <section class="video-call-container">
+            <div class="username-input">
+                <input id="username" type="text" placeholder="Create Nickname"><button id="create-user">Create</button>
+            </div>
+            <div class="video-streams">
+                
+                <div class="local-video">
+                    <video id="localVideo" autoplay muted playsinline ></video>
+                </div>
+                
+                <div class="remote-video">
+                    <video id="remoteVideo" autoplay muted playsinline></video>
+                </div>
+            </div>
+            <div class="call-controls">
+                <button id="end-call-btn" class="call call-disconnect d-none">
+                    <img height="30px" width="30px" src="/images/rejected.png" >
+                </button>
+                <button id="mute-call-btn" class="call call-mute d-none">
+                    <img height="30px" width="30px" src="/images/mute.png" >
+                </button>
+                    
+            </div>
+
+
+
+
+            <section class="chat-container">
+                <div class="chat-messages" id="chat-messages" >
+                    <!-- Chat messages will appear here -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Type a message..." />
+                    <button id="send-chat-btn">Send</button>
+                </div>
+            </section>
+        </section>
+    </main>
+    
+</body>
+</html>

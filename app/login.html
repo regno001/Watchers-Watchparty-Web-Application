@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login | Watchers</title>
+    <link rel="stylesheet" href="/css/auth.css" />
+  </head>
+  <body>
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <!-- optional small text/logo -->
+          <span>Watchers</span>
+        </div>
+
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-subtitle">Login to start your watch party.</p>
+
+        <div id="error" class="auth-error"></div>
+
+        <form id="loginForm" class="auth-form">
+          <label class="auth-label" for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            class="auth-input"
+            placeholder="Enter your username"
+            required
+          />
+
+          <label class="auth-label" for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            class="auth-input"
+            placeholder="Enter your password"
+            required
+          />
+
+          <button type="submit" class="auth-btn">Login</button>
+        </form>
+
+        <div class="auth-footer">
+          Don’t have an account?
+          <a class="auth-link" href="/signup">Sign up</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      const errorBox = document.getElementById("error");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.textContent = "";
+
+        const formData = new FormData(form);
+        const body = {
+          username: formData.get("username"),
+          password: formData.get("password"),
+        };
+
+        try {
+          const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            errorBox.textContent = data.message || "Login failed";
+            return;
+          }
+
+          window.location.href = "/";
+        } catch (err) {
+          console.error(err);
+          errorBox.textContent = "Something went wrong";
+        }
+      });
+    </script>
+  </body>
+</html>
