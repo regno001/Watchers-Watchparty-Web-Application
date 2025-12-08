@@ -1,6 +1,7 @@
 // server.js
 import dotenv from "dotenv";
 dotenv.config();
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -25,7 +26,7 @@ const __dirname = dirname(__filename);
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
-  console.error("❌ MONGO_URI is not set in .env");
+  console.error("❌ MONGO_URI is not set");
   process.exit(1);
 }
 
@@ -43,6 +44,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true }, // hashed
 });
 
+const User = mongoose.model("User", userSchema);
 
 // ---------- Middleware ----------
 app.use(express.json());
