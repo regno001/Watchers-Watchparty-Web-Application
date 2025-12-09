@@ -33,8 +33,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ====== Auth layout ====== */
-
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
@@ -54,7 +52,6 @@ body {
   overflow: hidden;
 }
 
-/* subtle gradient border glow */
 .auth-card::before {
   content: "";
   position: absolute;
@@ -90,8 +87,6 @@ body {
   margin-top: 10px;
 }
 
-/* ====== Form fields ====== */
-
 .auth-label {
   display: block;
   font-size: 1.3rem;
@@ -121,8 +116,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* ====== Button ====== */
-
 .auth-btn {
   width: 100%;
   padding: 11px 14px;
@@ -149,8 +142,6 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* ====== Helper text, links, error ====== */
-
 .auth-footer {
   margin-top: 14px;
   text-align: center;
@@ -175,7 +166,6 @@ body {
   margin-bottom: 8px;
 }
 
-/* Optional small logo/title on top */
 .auth-brand {
   display: flex;
   align-items: center;
@@ -187,8 +177,6 @@ body {
   font-size: 1.3rem;
   text-shadow: 0 0 8px rgba(3, 218, 198, 0.5);
 }
-
-/* ====== Responsive ====== */
 
 @media (max-width: 576px) {
   html {

@@ -10,15 +10,13 @@
   --text-secondary: #A0A0A0;
   --border-color: #333333;
   --danger-color: #CF6679;
-  
-  /* Defined Yellow Glow Color */
   --glow-yellow: #f9e109;
 }
 
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* This is the 'border-box' property you want to keep */
+  box-sizing: border-box; 
 }
 
 html {
@@ -26,7 +24,7 @@ html {
 }
 
 body {
-  /* Linear Gradient Background (Blue -> Lavender -> Red) */
+  
   background: linear-gradient(135deg, #0d0d50, #140e60, #5a16cf);
   background-attachment: fixed;
   color: var(--text-primary);
@@ -43,8 +41,6 @@ nav {
   align-items: center;
   padding: 20px 5%;
   background-color: #02002d;
-  
-  /* Removed Border Line, Kept Glow and Radius */
   border: none; 
   box-shadow: 0 4px 20px rgba(255, 230, 0, 0.15);
 }

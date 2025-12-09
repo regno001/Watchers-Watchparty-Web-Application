@@ -1,11 +1,9 @@
-// routes/auth.js
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 const router = express.Router();
 
-// POST /auth/signup
 router.post("/signup", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -26,7 +24,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// POST /auth/login
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -45,7 +42,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// POST /auth/logout
 router.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.json({ message: "Logged out" });

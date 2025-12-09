@@ -1,4 +1,3 @@
-// server.js
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -18,11 +17,9 @@ const server = createServer(app);
 const io = new Server(server);
 const allusers = {};
 
-// ---------- Paths ----------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// ---------- MongoDB ----------
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -38,15 +35,13 @@ mongoose
     process.exit(1);
   });
 
-// User model
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // hashed
+  password: { type: String, required: true },
 });
 
 const User = mongoose.model("User", userSchema);
 
-// ---------- Middleware ----------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -60,12 +55,9 @@ app.use(
   })
 );
 
-
-// static files
 app.use(express.static("public"));
 app.use("/uploads", express.static(join(__dirname, "uploads")));
 
-// ---------- Auth middleware ----------
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.user) {
     return res.redirect("/login");
@@ -73,7 +65,6 @@ function requireLogin(req, res, next) {
   next();
 }
 
-// ---------- Multer (uploads) ----------
 const uploadsPath = join(__dirname, "uploads");
 if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath);
 
@@ -94,9 +85,8 @@ app.post("/upload", upload.single("video"), (req, res) => {
   res.json({ success: true, path: videoPath });
 });
 
-// ---------- Auth API routes ----------
+// ===== Auth routes =====
 
-// Signup API
 app.post("/auth/signup", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -117,7 +107,6 @@ app.post("/auth/signup", async (req, res) => {
   }
 });
 
-// Login API
 app.post("/auth/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -136,31 +125,26 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-// Logout API
 app.post("/auth/logout", (req, res) => {
   req.session.destroy(() => {
     res.json({ message: "Logged out" });
   });
 });
 
-// ---------- Pages ----------
-
-// PUBLIC: signup page
 app.get("/signup", (req, res) => {
   res.sendFile(join(__dirname, "app", "signup.html"));
 });
 
-// PUBLIC: login page
 app.get("/login", (req, res) => {
   res.sendFile(join(__dirname, "app", "login.html"));
 });
 
-// PROTECTED: main VC page
 app.get("/", requireLogin, (req, res) => {
   res.sendFile(join(__dirname, "app", "vc.html"));
 });
 
-// ---------- Socket.IO ----------
+// ===== Socket.IO =====
+
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -169,19 +153,26 @@ io.on("connection", (socket) => {
     io.emit("joined", allusers);
   });
 
+  // WebRTC signaling
   socket.on("offer", ({ from, to, offer }) => {
-    if (allusers[to]) io.to(allusers[to].id).emit("offer", { from, to, offer });
+    if (allusers[to]) {
+      io.to(allusers[to].id).emit("offer", { from, to, offer });
+    }
   });
 
   socket.on("answer", ({ from, to, answer }) => {
-    if (allusers[from])
+    if (allusers[from]) {
       io.to(allusers[from].id).emit("answer", { from, to, answer });
+    }
   });
 
-  socket.on("icecandidate", ({ to, candidate }) => {
-    if (allusers[to]) io.to(allusers[to].id).emit("icecandidate", { candidate });
+  // IMPORTANT: match client (client sends `event.candidate` directly)
+  socket.on("icecandidate", (candidate) => {
+    // simple 2-user broadcast: send to everyone except sender
+    socket.broadcast.emit("icecandidate", candidate);
   });
 
+  // keep if you ever send "end-call" from client (currently you don't)
   socket.on("end-call", ({ from, to }) => {
     if (allusers[to]) io.to(allusers[to].id).emit("end-call", { from, to });
   });
@@ -191,13 +182,16 @@ io.on("connection", (socket) => {
     if (allusers[to]) io.to(allusers[to].id).emit("call-ended", [from, to]);
   });
 
+  // Chat
   socket.on("chat-message", (data) => {
     socket.broadcast.emit("chat-message", data);
   });
 
+  // YouTube sync
   socket.on("sync-youtube-video", ({ videoId, timestamp }) => {
-    if (videoId)
+    if (videoId) {
       socket.broadcast.emit("sync-youtube-video", { videoId, timestamp });
+    }
   });
 
   socket.on("play-video", (timestamp) => {
@@ -208,6 +202,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("pause-video", timestamp);
   });
 
+  // Old events – safe to keep if some old client still uses them
   socket.on("video-uploaded", (path) => {
     socket.broadcast.emit("video-uploaded", path);
   });
@@ -216,6 +211,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("youtube-loaded", url);
   });
 
+  // Local media (image / video) upload – this is what swaps YouTube -> uploaded media on other user
   socket.on("media-uploaded", ({ dataUrl, type }) => {
     socket.broadcast.emit("media-uploaded", { dataUrl, type });
   });
@@ -224,16 +220,16 @@ io.on("connection", (socket) => {
     for (const username in allusers) {
       if (allusers[username].id === socket.id) {
         delete allusers[username];
+        io.emit("joined", allusers);
         io.emit("user-disconnected", username);
         break;
       }
     }
+    console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-// ---------- Start server ----------
 const PORT = process.env.PORT || 7000;
 server.listen(PORT, () => {
   console.log("Server listening on port", PORT);
 });
-
